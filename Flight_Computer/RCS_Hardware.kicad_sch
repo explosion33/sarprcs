@@ -2520,7 +2520,7 @@
     (stroke (width 0) (type default))
     (uuid 20bcfa80-aeef-4db8-8e3f-c0422e9f9f38)
   )
-  (polyline (pts (xy 114.3 190.754) (xy 160.782 190.754))
+  (polyline (pts (xy 115.316 190.754) (xy 161.798 190.754))
     (stroke (width 0) (type default))
     (uuid 213375bd-5267-4464-b77b-55f328dedffe)
   )
