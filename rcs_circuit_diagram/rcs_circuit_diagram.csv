@@ -1,0 +1,12 @@
+#,Reference,Qty,Value,Footprint,DNP,,,JLCPCB
+1,C2,1,220 uF,Capacitor_SMD:C_1210_3225Metric,,,,C2891986
+2,C3,1,C_Polarized,Capacitor_THT:CP_Radial_D10.0mm_P2.50mm,,,,
+3,"D1, D3, D4, D5, D6, D7",6,Red,LED_SMD:LED_0603_1608Metric,,,,
+4,D2,1,1N5822,Diode_THT:D_DO-201AD_P15.24mm_Horizontal,,,,https://www.digikey.com/en/products/detail/stmicroelectronics/1N5822/1037332
+5,J1,1,Conn_01x06_Pin,Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical,,,,
+6,"J3, J6, J7, J9, J11, J13, J15",7,Conn_01x02_Pin,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,,,,
+7,L1,1,33 uH,Inductor_SMD:L_0603_1608Metric,,,,C2044045
+8,"MOSFET1, MOSFET2, MOSFET3, MOSFET4, MOSFET5, MOSFET6, MOSFET7, MOSFET8, MOSFET9, MOSFET10, MOSFET11, MOSFET12, MOSFET13, MOSFET14, MOSFET15, MOSFET16, MOSFET17, MOSFET18",18,IRLB8721,Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown,,,,https://www.digikey.com/en/products/detail/infineon-technologies/IRLB8721PBF/2127670
+9,"R1, R2, R3, R4, R5, R6",6,4.7k,Resistor_SMD:R_0402_1005Metric,,,,C5120109
+10,"Snubber1, Snubber2, Snubber3, Snubber4, Snubber5, Snubber6",6,1N5819,Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal,,,,https://www.digikey.com/en/products/detail/stmicroelectronics/1N5819/1037326
+11,U1,1,LM2596S-5,Package_TO_SOT_SMD:TO-263-5_TabPin3,,,,https://www.digikey.com/en/products/detail/texas-instruments/LM2596S-5-0-NOPB/334842
