@@ -388,7 +388,7 @@
     (property "Sheetname" "")
     (path "/49192a95-428d-411d-8bbd-9d3686ddbb98")
     (attr through_hole)
-    (fp_text reference "U7" (at 4.064 -1.778 unlocked) (layer "F.SilkS")
+    (fp_text reference "LTC" (at 4.064 -1.778 unlocked) (layer "F.SilkS")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 55f5df8d-253b-411b-81d5-0efac6748dce)
     )
@@ -420,6 +420,11 @@
       (net 47 "Net-(J8-Pin_4)") (pinfunction "B") (pintype "input") (tstamp 2b67f036-84db-4478-9e99-8c93e47f3a00))
     (pad "8" thru_hole circle (at 7.62 0) (size 1.524 1.524) (drill 0.762) (layers "*.Cu" "*.Mask")
       (net 48 "Net-(J8-Pin_5)") (pinfunction "A") (pintype "input") (tstamp ea460881-72ca-4eaa-89e4-f35a950a146c))
+    (model "${KIPRJMOD}/Components/LT1690/LTC1690IN8#PBF.STEP"
+      (offset (xyz 7.6 -7.6 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
   )
 
   (footprint "TestPoint:TestPoint_THTPad_2.5x2.5mm_Drill1.2mm" (layer "F.Cu")
@@ -826,7 +831,7 @@
       (tstamp f6352500-6f56-4987-b5b2-4902ff867b3e)
     )
     (fp_text user "PCB EDGE" (at 5.2 1.9 90) (layer "F.Fab")
-        (effects (font (size 0.48 0.48) (thickness 0.15)))
+        (effects (font (size 0.48 0.48) (thickness 0.12)))
       (tstamp c248cd89-52ff-4325-8df0-93c11a691ba2)
     )
     (fp_poly
@@ -3099,6 +3104,11 @@
       (net 2 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp ec9dc266-6409-4de7-975f-3d366e699671))
     (pad "S4" thru_hole circle (at 4.325 0 90) (size 0.9 0.9) (drill 0.6) (layers "*.Cu")
       (net 2 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp e362466e-09af-457c-b914-6aea1b717ff5))
+    (model "${KIPRJMOD}/Components/USBC/TYPE-C-31-M-12.step"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
   )
 
   (footprint "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm" (layer "F.Cu")
@@ -3471,10 +3481,10 @@
       (net 80 "unconnected-(U5-IO3-Pad7)") (pinfunction "IO3") (pintype "bidirectional+no_connect") (tstamp f3146cb5-e167-44b7-955c-ccf41f0159fc))
     (pad "8" smd roundrect (at 3.6 -1.905 180) (size 1.6 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 5 "+3.3V") (pinfunction "VCC") (pintype "power_in") (tstamp 4df2ff5d-d48d-4818-9bf2-4a6716a786c2))
-    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/SOIC-8_5.23x5.23mm_P1.27mm.wrl"
+    (model "${KIPRJMOD}/Components/W25Q32/W25Q32JVSSIQ--3DModel-STEP-269445.STEP"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz -90 0 0))
     )
   )
 
