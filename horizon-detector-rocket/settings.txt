@@ -5,7 +5,7 @@ easy_mode_limit_roll:30
 easy_mode_limit_pitch:10
 max_deflection:0.4
 servos_reversed:0
-source:
+source:test_vid.webm
 fps:30
 inference_resolution:(100,100)
 resolution:(640,480)
