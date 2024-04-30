@@ -2,3 +2,7 @@
 *.mp3
 *.mov
 *.webm
+.venv/
+.idea/
+__pycache__/
+
