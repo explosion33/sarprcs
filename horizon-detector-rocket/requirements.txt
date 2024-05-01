@@ -1,7 +1,6 @@
 altgraph==0.17.4
 imageio==2.34.0
 importlib-metadata==7.0.1
-lazy_loader==0.3
 networkx==3.2.1
 numpy==1.26.4
 opencv-python==4.9.0.80

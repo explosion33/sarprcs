@@ -38,22 +38,6 @@ def disable_wifi_and_bluetooth():
     
     return wifi_response, bluetooth_response
     
-if __name__ == "__main__":
-    from text_to_speech import speaker
-    wifi_response, bluetooth_response = disable_wifi_and_bluetooth()
-    speaker.add_to_queue(f'{wifi_response} {bluetooth_response}')
-    sleep(1) # wait for speaker to get started
-    
-    # wait for the speaker to finish
-    for n in range(200):
-        if speaker.isSpeaking:
-            sleep(.01)
-        else:
-            break
-                
-    speaker.release()
-    print('Ending demo.')
-    
     
     
     

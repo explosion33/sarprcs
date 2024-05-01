@@ -1,2 +1,0 @@
-settings.txt - contains all the settings
-requirements.txt - supplemental
