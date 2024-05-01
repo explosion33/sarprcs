@@ -2,7 +2,7 @@
 *.mp3
 *.mov
 *.webm
-.venv/
-.idea/
-__pycache__/
+/.venv/
+/.idea/
+/__pycache__/
 
