@@ -2,7 +2,7 @@
 *.mp3
 *.mov
 *.webm
-/.venv/
-/.idea/
-/__pycache__/
+horizon-detector-rocket/.venv/
+horizon-detector-rocket/.idea/
+horizon-detector-rocket/__pycache__/
 
