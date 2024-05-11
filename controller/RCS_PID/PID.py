@@ -25,7 +25,7 @@ class PID():
         D = -1*self.Kd*( error - self.error_last )/dt
         output = P+I+D
         self.error_last = error
-        if self.max_thrust is not None: # check for saturation
+        if self.max_thrust is not None: # check for saturation if a limit is set
             if output > 0: # positive direction
                 if output > self.max_thrust:
                     output = self.max_thrust
@@ -35,7 +35,7 @@ class PID():
                 if abs(output) > self.max_thrust:
                     output = -1*self.max_thrust
                 elif abs(output) < self.min_thrust:
-                    output = -1*self.min_thrustf
+                    output = -1*self.min_thrust
         return output
     
     def setLims(self,min,max):
