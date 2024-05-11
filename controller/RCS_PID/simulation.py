@@ -1,16 +1,18 @@
 from PID import PID 
 
-controller = PID(1.00, 0.01, 0.01)
+controller = PID(1, 0.01, 0.1)
 controller.setLims(1,10) #min & max thrust in newtons
 
-
-out = controller.compute(1,)
-print()
+# print("max_thrust: ", controller.max_thrust)
+# print(controller.Kp, controller.Ki, controller.Kd)
 
 theta0 = -0.5
 dt = 0.01
 sim_time = 0
 time_limit = 10
+
+out = controller.compute(theta0,dt)
+print("output: ", out)
 
 # TODO use lqr notes & adapt state space model for PID tuning
 
@@ -54,3 +56,5 @@ def state_space_model(A, state_t_minus_1, B, control_input_t_minus_1):
 
 #     controller.compute(theta,dt)
 #     sim_time += dt
+
+
