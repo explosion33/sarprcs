@@ -10,7 +10,14 @@ class PID():
         self.max_thrust = None
         self.min_thrust = None
     
-    def compute(self,theta,dt):
+    def compute(self,theta:float,dt:float) -> float: #idk if type specification is useful
+        '''
+        Args: 
+        theta - angle (rad) of rocket: float
+        dt - time step (sec) since last computation: float
+        Output: 
+        PID control command (newtons): float
+        '''
         error = theta - self.setpoint # error will just be theta
         self.integral_error += error*dt # add error to integral
         P = -1*self.Kp*error
@@ -28,6 +35,7 @@ class PID():
         return output
     
     def setLims(self,min,max):
+        ''' Sets minimum & maximum thrust in newtons'''
         self.max_thrust = max
         self.min_thrust = min    
                 
