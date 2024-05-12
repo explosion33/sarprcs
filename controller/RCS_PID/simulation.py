@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # --INITIALIZE STATE--
-theta0 = -0.8 # rad
+theta0 = -0.5 # rad
 omega0 = -0.5 # rad/s
 initial_state = [theta0, omega0]
 # --------------------
@@ -14,13 +14,13 @@ dt = 0.01
 mmoi = 1000
 rz = 5 # vertical distance from COM to thruster 
 sim_time = 0
-time_limit = 10
+time_limit = 100
 # --------------
 
 # --CONTROLLER PARAMS--
-Kp = 100
+Kp = 500
 Ki = 1
-Kd = 5
+Kd = 50
 min_thrust = 5
 max_thrust = 100
 # ---------------------
@@ -29,7 +29,7 @@ controller = PID(Kp, Ki, Kd)
 controller.setLims(min_thrust, max_thrust) # min & max thrust in newtons
 rocket = oneDofPhysics(initial_state, mmoi, rz)
 
-N = int(time_limit/dt)+1
+N = int(time_limit/dt)
 thetas = [None]*N
 omegas = [None]*N
 commands = [None]*N
@@ -52,11 +52,12 @@ while sim_time < time_limit:
 theta_deg = [t*360/(2*np.pi) for t in thetas]
 omega_deg_s = [o*360/(2*np.pi) for o in omegas]
 time = np.linspace(0, time_limit, N)
-fig, ax = plt.subplots(2)
+fig, ax = plt.subplots(3)
 ax[0].plot(time, theta_deg, 'b-')
 ax[1].plot(time, omega_deg_s,'m-')
-ax[0].set_ylabel(r"$\theta_x$", fontsize=15)
-ax[1].set_ylabel(r"$\omega_x$", fontsize=15)
+ax[2].plot(time, commands, 'r-')
+ax[0].set_ylabel(r"$\theta_x$ [deg]", fontsize=15)
+ax[1].set_ylabel(r"$\omega_x$ [deg/s]", fontsize=15)
 
 fig.savefig("RCS_PID/figs/states_over_time")
 fig.show()
