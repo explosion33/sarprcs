@@ -223,7 +223,7 @@ def main():
 
         # Stop as soon as we reach the goal
         # Feel free to change this threshold value.
-        if state_error_magnitude < 0.1:
+        if state_error_magnitude < 0.5:
             print("\nGoal Has Been Reached Successfully!")
             break
 

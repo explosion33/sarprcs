@@ -59,5 +59,5 @@ ax[2].plot(time, commands, 'r-')
 ax[0].set_ylabel(r"$\theta_x$ [deg]", fontsize=15)
 ax[1].set_ylabel(r"$\omega_x$ [deg/s]", fontsize=15)
 
-fig.savefig("RCS_PID/figs/states_over_time")
+fig.savefig("RCS_PID/figs/1DoF_States.png")
 fig.show()
