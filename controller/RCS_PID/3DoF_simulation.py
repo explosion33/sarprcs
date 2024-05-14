@@ -24,9 +24,9 @@ time_limit = 50
 # --CONTROLLER PARAMS--
 Kp = 500
 Ki = 1
-Kd = 100
+Kd = 200
 min_thrust = 5
-max_thrust = 50
+max_thrust = 250
 # ---------------------
 
 coeff_rad_to_degrees = 360/(2*np.pi)
@@ -86,6 +86,9 @@ ax[3].set_ylabel(r"$\omega_y$", fontsize=15)
 ax[4].set_ylabel(r"$\omega_z$", fontsize=15)
 ax[5].set_ylabel(r"commands", fontsize=15)
 ax[5].legend()
+
+for x in ax:
+    x.grid()
 # fig.savefig("RCS_PID/figs/3DoF_States")
 plt.tight_layout()
 plt.show()
