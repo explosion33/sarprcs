@@ -20,10 +20,15 @@ class threeDofPhysics():
         
     def forces(self, forces, dt):
         # STATE VECTOR IS A DICTIONARY
-        self.state_vector['thX'] = self.state_vector['thX'] + self.state_vector['wX']*dt + forces['x_thrust']*(0.5*self.rz/self.mmoiX)*dt**2
-        self.state_vector['wX'] = self.state_vector['wX'] + forces['x_thrust']*(self.rz/self.mmoiX)*dt
-        self.state_vector['thY'] = self.state_vector['thY'] + self.state_vector['wY']*dt + forces['y_thrust']*(0.5*self.rz/self.mmoiX)*dt**2
-        self.state_vector['wY'] = self.state_vector['wY'] + forces['y_thrust']*(self.rz/self.mmoiX)*dt
-        self.state_vector['wZ'] = self.state_vector['wZ'] + 2*forces['z_thrust']*(self.rx/self.mmoiZ)*dt # force couple --> no resultant force, only moment
+        self.state_vector['thX'] = self.state_vector['thX'] \
+            + self.state_vector['wX']*dt + forces['x_thrust']*(0.5*self.rz/self.mmoiX)*dt**2
+        self.state_vector['wX'] = self.state_vector['wX'] \
+            + forces['x_thrust']*(self.rz/self.mmoiX)*dt
+        self.state_vector['thY'] = self.state_vector['thY'] \
+            + self.state_vector['wY']*dt + forces['y_thrust']*(0.5*self.rz/self.mmoiX)*dt**2
+        self.state_vector['wY'] = self.state_vector['wY'] \
+            + forces['y_thrust']*(self.rz/self.mmoiX)*dt
+        self.state_vector['wZ'] = self.state_vector['wZ'] \
+            + 2*forces['z_thrust']*(self.rx/self.mmoiZ)*dt # force couple --> no resultant force, only moment
         
         

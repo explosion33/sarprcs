@@ -7,16 +7,15 @@ class PID {
         float setpoint;
         float error_last;
         float integral_error;
-        float max_thrust;
-        float min_thrust;
+        float max_thrust = 999999999;
+        float min_thrust = 999999999; // can I do this?
 
         // do these go here???
-            float error;
-            float P;
-            float I;
-            float D;
-            float output;
-
+        float error;
+        float P;
+        float I;
+        float D;
+        float output;
 
         PID(float KP, float KI, float KD) {
             error_last = 0;
