@@ -218,9 +218,7 @@ def main():
         # so we can get a new actual (estimated) state.
         actual_state_x = state_space_model(A, actual_state_x, B, 
                                         optimal_control_input * 1.4)  
-        # this will 
-
-
+        # this will
         # Stop as soon as we reach the goal
         # Feel free to change this threshold value.
         if state_error_magnitude < 0.5:

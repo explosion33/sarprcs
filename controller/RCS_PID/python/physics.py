@@ -19,7 +19,6 @@ class threeDofPhysics():
         self.rx = r_x
         
     def forces(self, forces, dt):
-        # STATE VECTOR IS A DICTIONARY
         self.state_vector['thX'] = self.state_vector['thX'] \
             + self.state_vector['wX']*dt + forces['x_thrust']*(0.5*self.rz/self.mmoiX)*dt**2
         self.state_vector['wX'] = self.state_vector['wX'] \
