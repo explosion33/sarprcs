@@ -7,7 +7,8 @@ class PID():
         self.setpoint = target
         self.error_last = 0
         self.integral_error = 0
-        self.min_ontime = None
+        self.max_thrust = None
+        self.min_thrust = None
     
     def compute(self,theta:float,dt:float) -> float: #idk if type specification is useful
         '''
@@ -24,13 +25,22 @@ class PID():
         D = -1*self.Kd*( error - self.error_last )/dt
         output = P+I+D
         self.error_last = error
-        if self.min_ontime is not None: # check for saturation if a limit is set
-            if abs(output) < self.min_ontime:
-                output = 0
+        if self.max_thrust is not None: # check for saturation if a limit is set
+            if output > 0: # positive direction
+                if output > self.max_thrust:
+                    output = self.max_thrust
+                elif output < self.min_thrust:
+                    output = self.min_thrust
+            else: # negative direction
+                if abs(output) > self.max_thrust:
+                    output = -1*self.max_thrust
+                elif abs(output) < self.min_thrust:
+                    output = -1*self.min_thrust
         return output
     
-    def setMinOntime(self,min):
-        ''' Sets minimum ontime for the solenoid in seconds'''
-        self.min_ontime = min    
+    def setLims(self,min,max):
+        ''' Sets minimum & maximum thrust in newtons'''
+        self.max_thrust = max
+        self.min_thrust = min    
                 
         

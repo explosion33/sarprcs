@@ -1,46 +1,31 @@
+#include "PID.h"
 
-class PID {
-    public:
-        float Kp;
-        float Ki;
-        float Kd;
-        float setpoint;
-        float error_last;
-        float integral_error;
-        float max_thrust = 999999999;
-        float min_thrust = 999999999; // can I do this?
+PID::PID(float KP, float KI, float KD) {
+    max_thrust = 999999999;
+    min_thrust = 999999999; // can I do this?
+    error_last = 0;
+    integral_error = 0;
+    // max_thrust = None;
+    // min_thrust = None;
+    Kp = KP;
+    Ki = KI;
+    Kd = Kd;
+}
 
-        // do these go here???
-        float error;
-        float P;
-        float I;
-        float D;
-        float output;
+float PID::compute(float theta,float dt) {
+    float error = theta; //error will just be theta
+    integral_error += error*dt; // sum all errors*dt
+    float P = -1*Kp*error;
+    float I = -1*Ki*integral_error;
+    float D = -1*Kd*( error - error_last )/dt;
+    float output = P+I+D;
+    error_last = error;
+    return output;
+}
 
-        PID(float KP, float KI, float KD) {
-            error_last = 0;
-            integral_error = 0;
-            // max_thrust = None;
-            // min_thrust = None;
-            Kp = KP;
-            Ki = KI;
-            Kd = Kd;
-        }
+void PID::setLims(float min, float max) {
+    // Sets minimum & maximum thrust in newtons
+    max_thrust = max;
+    min_thrust = min;
 
-        void compute(float theta,float dt) {
-            error = theta; //error will just be theta
-            integral_error += error*dt; // sum all errors*dt
-            P = -1*Kp*error;
-            I = -1*Ki*integral_error;
-            D = -1*Kd*( error - error_last )/dt;
-            output = P+I+D;
-            error_last = error;
-        }
-
-        void setLims(float min, float max) {
-        // Sets minimum & maximum thrust in newtons
-        max_thrust = max;
-        min_thrust = min;
-        }
-
-};
+}

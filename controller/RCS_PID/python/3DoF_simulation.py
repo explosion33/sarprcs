@@ -2,13 +2,18 @@ from PID import PID
 from physics import threeDofPhysics
 import numpy as np
 import matplotlib.pyplot as plt
+import time
+
+coeff_rad_to_deg = 360/(2*np.pi)
+coeff_deg_to_rad = (2*np.pi)/360
+
 
 # --INITIALIZE STATE--
-initial_state = {'thX': -0.5,
-                 'wX': -0.3,
-                 'thY': 0.2,
-                 'wY': -1,
-                 'wZ': 5,}
+initial_state = {'thX': -5 *coeff_deg_to_rad,
+                 'wX': -2 *coeff_deg_to_rad,
+                 'thY': 7 *coeff_deg_to_rad,
+                 'wY': -1 *coeff_deg_to_rad,
+                 'wZ': 50 *coeff_deg_to_rad,}
 # --------------------
 
 # --SIM PARAMS-- (units in N, m, kg, s, etc.) 
@@ -18,26 +23,24 @@ mmoiZ = 50
 rz = 5 # vertical distance from COM to thruster
 rx = 0.1 # distanace from centerline to offset thrust vector
 sim_time = 0
-time_limit = 50
+time_limit = 30
+solenoid_thrust = 20
 # --------------
 
 # --CONTROLLER PARAMS--
-Kp = 500
+Kp = 100
 Ki = 1
-Kd = 200
-min_thrust = 5
-max_thrust = 250
+Kd = 20
+min_ontime = 0.5
 # ---------------------
-
-coeff_rad_to_degrees = 360/(2*np.pi)
 
 x_controller = PID(Kp, Ki, Kd)
 y_controller = PID(Kp, Ki, Kd)
-z_controller = PID(100, 0, 0) # z_controller gets handed angular velocty, not angle
+z_controller = PID(1, 0, 0) # z_controller gets handed angular velocty, not angle
 
-x_controller.setLims(min_thrust, max_thrust) # min & max thrust in newtons
-y_controller.setLims(min_thrust, max_thrust)
-z_controller.setLims(min_thrust, max_thrust)
+x_controller.setMinOntime(min_ontime)
+y_controller.setMinOntime(min_ontime)
+z_controller.setMinOntime(min_ontime)
 
 rocket = threeDofPhysics(initial_state, mmoiX, mmoiZ, rz, rx)
 
@@ -51,44 +54,98 @@ Xcommands = [None]*N
 Ycommands = [None]*N
 Zcommands = [None]*N 
 i=0
+x_on = False
+y_on = False
+z_on = False
+x_time_on = 0
+y_time_on = 0
+z_time_on = 0
+force_vector = {'x_thrust': solenoid_thrust}
+x_act_track = [None]*N
+y_act_track = [None]*N
+z_act_track = [None]*N
 while sim_time < time_limit:
-    Xthetas[i] = rocket.state_vector['thX'] *coeff_rad_to_degrees
-    Ythetas[i] = rocket.state_vector['thY'] *coeff_rad_to_degrees
-    Xomegas[i] = rocket.state_vector['wX'] *coeff_rad_to_degrees
-    Yomegas[i] = rocket.state_vector['wY'] *coeff_rad_to_degrees 
-    Zomegas[i] = rocket.state_vector['wZ']  *coeff_rad_to_degrees
+    Xthetas[i] = rocket.state_vector['thX'] *coeff_rad_to_deg
+    Ythetas[i] = rocket.state_vector['thY'] *coeff_rad_to_deg
+    Xomegas[i] = rocket.state_vector['wX'] *coeff_rad_to_deg
+    Yomegas[i] = rocket.state_vector['wY'] *coeff_rad_to_deg 
+    Zomegas[i] = rocket.state_vector['wZ']  *coeff_rad_to_deg
     x_command = x_controller.compute(rocket.state_vector['thX'], dt)
     y_command = y_controller.compute(rocket.state_vector['thY'], dt)
     z_command = z_controller.compute(rocket.state_vector['wZ'], dt)
     Xcommands[i], Ycommands[i], Zcommands[i] = x_command, y_command, z_command
-    force_vector = {'x_thrust': x_command, 'y_thrust': y_command, 'z_thrust': z_command}
+    ontime_vector = {'x': x_command, 'y': y_command, 'z': z_command}
+    # CONTROLLER OUTPUTS SOLENOID ON-TIME
+    
+    ontime_x = time.time() - x_time_on
+    ontime_y = time.time() - y_time_on
+    ontime_z = time.time() - z_time_on
+
+    if not x_on and x_command != 0:
+        x_on = True
+        x_time_on = time.time() # mark when solenoid was turned on
+    if x_on and ontime_x > abs(x_command) and ontime_x >= min_ontime:
+        # if it has been longer than commanded time, turn back off
+        x_on = False
+
+    if not y_on and y_command != 0:
+        y_on = True
+        y_time_on = time.time()
+    if y_on and ontime_y > abs(y_command) and ontime_y >= min_ontime:
+        y_on = False
+
+    if not z_on and z_command != 0:
+        z_on = True
+        z_time_on = time.time()
+    if z_on and ontime_z > abs(z_command) and ontime_z >= min_ontime:
+        z_on = False
+    
+    def getSign(cmd):
+        if cmd == 0:
+            return 0
+        return cmd/abs(cmd)
+
+    force_vector = {'x_thrust': getSign(x_command)*solenoid_thrust*x_on, # thrust will be zero if x_on = False
+                    'y_thrust': getSign(y_command)*2*solenoid_thrust*y_on,
+                    'z_thrust': getSign(z_command)*2*solenoid_thrust*z_on}
+    
+    x_act_track[i] = getSign(x_command)*x_on
+    y_act_track[i] = getSign(y_command)*y_on
+    z_act_track[i] = getSign(z_command)*z_on
+
     rocket.forces(force_vector, dt)
     sim_time += dt
     i+=1
 
 # --PLOTTING--
 time = np.linspace(0, time_limit, N)
-fig, ax = plt.subplots(6, figsize=[8,12])
+fig, ax = plt.subplots(3, 3, figsize=[12,8])
 
-ax[0].plot(time, Xthetas, color='r')
-ax[1].plot(time, Ythetas, color='royalblue')
-ax[2].plot(time, Xomegas, color='orange')
-ax[3].plot(time, Yomegas, color='springgreen')
-ax[4].plot(time, Zomegas, color='m')
-ax[5].plot(time, Xcommands, color='r', label='x')
-ax[5].plot(time, Ycommands, color='royalblue',label='y')
-ax[5].plot(time, Zcommands, color='m',label='z')
+ax[0][0].plot(time, Xthetas, color='r')
+ax[0][1].plot(time, Ythetas, color='royalblue')
 
-ax[0].set_ylabel(r"$\theta_x$", fontsize=15)
-ax[1].set_ylabel(r"$\theta_y$", fontsize=15)
-ax[2].set_ylabel(r"$\omega_x$", fontsize=15)
-ax[3].set_ylabel(r"$\omega_y$", fontsize=15)
-ax[4].set_ylabel(r"$\omega_z$", fontsize=15)
-ax[5].set_ylabel(r"commands", fontsize=15)
-ax[5].legend()
+ax[1][0].plot(time, Xomegas, color='orange')
+ax[1][1].plot(time, Yomegas, color='springgreen')
+ax[1][2].plot(time, Zomegas, color='m')
 
-for x in ax:
-    x.grid()
+ax[2][0].plot(time, x_act_track, color='r', label='x')
+ax[2][1].plot(time, y_act_track, color='royalblue',label='y')
+ax[2][2].plot(time, z_act_track, color='m',label='z')
+
+ax[0][0].set_ylabel(r"$\theta_x$", fontsize=15)
+ax[0][1].set_ylabel(r"$\theta_y$", fontsize=15)
+ax[1][0].set_ylabel(r"$\omega_x$", fontsize=15)
+ax[1][1].set_ylabel(r"$\omega_y$", fontsize=15)
+ax[1][2].set_ylabel(r"$\omega_z$", fontsize=15)
+
+ax[2][0].set_ylabel("x_cmd", fontsize=15)
+ax[2][1].set_ylabel("y_cmd", fontsize=15)
+ax[2][2].set_ylabel("z_cmd", fontsize=15)
+
+for i in range(len(ax)):
+    for j in range(len(ax[0])):
+        ax[i][j].grid()
+
 # fig.savefig("RCS_PID/figs/3DoF_States")
 plt.tight_layout()
 plt.show()

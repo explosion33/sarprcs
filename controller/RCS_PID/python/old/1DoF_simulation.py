@@ -1,5 +1,5 @@
-from PID import PID 
-from physics import oneDofPhysics
+from RCS_PID.python.PID import PID 
+from RCS_PID.python.physics import oneDofPhysics
 import numpy as np
 import matplotlib.pyplot as plt
 
