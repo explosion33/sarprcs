@@ -64,6 +64,7 @@ force_vector = {'x_thrust': solenoid_thrust}
 x_act_track = [None]*N
 y_act_track = [None]*N
 z_act_track = [None]*N
+
 while sim_time < time_limit:
     Xthetas[i] = rocket.state_vector['thX'] *coeff_rad_to_deg
     Ythetas[i] = rocket.state_vector['thY'] *coeff_rad_to_deg
@@ -121,16 +122,16 @@ while sim_time < time_limit:
 time = np.linspace(0, time_limit, N)
 fig, ax = plt.subplots(3, 3, figsize=[12,8])
 
-ax[0][0].plot(time, Xthetas, color='r')
-ax[0][1].plot(time, Ythetas, color='royalblue')
+ax[0][0].plot(time, Xthetas, color='#4C4281')
+ax[0][1].plot(time, Ythetas, color='#055A39')
 
-ax[1][0].plot(time, Xomegas, color='orange')
-ax[1][1].plot(time, Yomegas, color='springgreen')
-ax[1][2].plot(time, Zomegas, color='m')
+ax[1][0].plot(time, Xomegas, color='#4C4281')
+ax[1][1].plot(time, Yomegas, color='#055A39')
+ax[1][2].plot(time, Zomegas, color='#F9216A')
 
-ax[2][0].plot(time, x_act_track, color='r', label='x')
-ax[2][1].plot(time, y_act_track, color='royalblue',label='y')
-ax[2][2].plot(time, z_act_track, color='m',label='z')
+ax[2][0].plot(time, x_act_track, color='#4C4281', label='x')
+ax[2][1].plot(time, y_act_track, color='#055A39',label='y')
+ax[2][2].plot(time, z_act_track, color='#F9216A',label='z')
 
 ax[0][0].set_ylabel(r"$\theta_x$", fontsize=15)
 ax[0][1].set_ylabel(r"$\theta_y$", fontsize=15)
