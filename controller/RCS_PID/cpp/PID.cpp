@@ -2,7 +2,7 @@
 
 PID::PID(float KP, float KI, float KD) {
     max_thrust = 999999999;
-    min_thrust = 999999999; // can I do this?
+    min_thrust = 999999999; // better way to do this?
     error_last = 0;
     integral_error = 0;
     // max_thrust = None;

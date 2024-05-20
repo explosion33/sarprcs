@@ -36,7 +36,7 @@ min_ontime = 0.5
 
 x_controller = PID(Kp, Ki, Kd)
 y_controller = PID(Kp, Ki, Kd)
-z_controller = PID(1, 0, 0) # z_controller gets handed angular velocty, not angle
+z_controller = PID(100, 1, 1) # z_controller gets handed angular velocty, not angle
 
 x_controller.setMinOntime(min_ontime)
 y_controller.setMinOntime(min_ontime)
@@ -118,27 +118,28 @@ while sim_time < time_limit:
     sim_time += dt
     i+=1
 
-# --PLOTTING--
+# -- PLOTTING ------------------------
 time = np.linspace(0, time_limit, N)
 fig, ax = plt.subplots(3, 3, figsize=[12,8])
 
+# theta
 ax[0][0].plot(time, Xthetas, color='#4C4281')
 ax[0][1].plot(time, Ythetas, color='#055A39')
+ax[0][0].set_ylabel(r"$\theta_x$", fontsize=15)
+ax[0][1].set_ylabel(r"$\theta_y$", fontsize=15)
 
+# omega
 ax[1][0].plot(time, Xomegas, color='#4C4281')
 ax[1][1].plot(time, Yomegas, color='#055A39')
 ax[1][2].plot(time, Zomegas, color='#F9216A')
-
-ax[2][0].plot(time, x_act_track, color='#4C4281', label='x')
-ax[2][1].plot(time, y_act_track, color='#055A39',label='y')
-ax[2][2].plot(time, z_act_track, color='#F9216A',label='z')
-
-ax[0][0].set_ylabel(r"$\theta_x$", fontsize=15)
-ax[0][1].set_ylabel(r"$\theta_y$", fontsize=15)
 ax[1][0].set_ylabel(r"$\omega_x$", fontsize=15)
 ax[1][1].set_ylabel(r"$\omega_y$", fontsize=15)
 ax[1][2].set_ylabel(r"$\omega_z$", fontsize=15)
 
+# actuation
+ax[2][0].plot(time, x_act_track, color='#4C4281', label='x')
+ax[2][1].plot(time, y_act_track, color='#055A39',label='y')
+ax[2][2].plot(time, z_act_track, color='#F9216A',label='z')
 ax[2][0].set_ylabel("x_cmd", fontsize=15)
 ax[2][1].set_ylabel("y_cmd", fontsize=15)
 ax[2][2].set_ylabel("z_cmd", fontsize=15)
@@ -150,4 +151,4 @@ for i in range(len(ax)):
 # fig.savefig("RCS_PID/figs/3DoF_States")
 plt.tight_layout()
 plt.show()
-# -----------
+# -----------------------------------

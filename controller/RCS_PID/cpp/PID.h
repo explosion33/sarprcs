@@ -17,7 +17,6 @@ class PID {
         float integral_error;
         float max_thrust;
         float min_thrust;
-
 };
 
 
