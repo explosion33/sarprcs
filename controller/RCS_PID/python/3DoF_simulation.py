@@ -30,13 +30,13 @@ solenoid_thrust = 20
 # --CONTROLLER PARAMS--
 Kp = 100
 Ki = 1
-Kd = 20
+Kd = 30
 min_ontime = 0.5
 # ---------------------
 
 x_controller = PID(Kp, Ki, Kd)
 y_controller = PID(Kp, Ki, Kd)
-z_controller = PID(100, 1, 1) # z_controller gets handed angular velocty, not angle
+z_controller = PID(1000, 1, 1) # z_controller gets handed angular velocty, not angle
 
 x_controller.setMinOntime(min_ontime)
 y_controller.setMinOntime(min_ontime)
@@ -78,13 +78,24 @@ while sim_time < time_limit:
     ontime_vector = {'x': x_command, 'y': y_command, 'z': z_command}
     # CONTROLLER OUTPUTS SOLENOID ON-TIME
     
-    ontime_x = time.time() - x_time_on
-    ontime_y = time.time() - y_time_on
-    ontime_z = time.time() - z_time_on
+    if x_on:
+        ontime_x = time.time() - x_time_on
+    else:
+        ontime_x = 0
+
+    if y_on:
+        ontime_y = time.time() - y_time_on
+    else:
+        ontime_y = 0
+
+    if z_on:   
+        ontime_z = time.time() - z_time_on
+    else:
+        ontime_z = 0
 
     if not x_on and x_command != 0:
         x_on = True
-        x_time_on = time.time() # mark when solenoid was turned on
+        x_time_on = time.time() # mark when solenoid was turned ON
     if x_on and ontime_x > abs(x_command) and ontime_x >= min_ontime:
         # if it has been longer than commanded time, turn back off
         x_on = False
@@ -101,6 +112,10 @@ while sim_time < time_limit:
     if z_on and ontime_z > abs(z_command) and ontime_z >= min_ontime:
         z_on = False
     
+    # DEBUG
+    print(x_on, round(time.time()-start_time,3), x_time_on-start_time, ontime_x)
+
+
     def getSign(cmd):
         if cmd == 0:
             return 0
