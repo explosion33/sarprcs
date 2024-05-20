@@ -64,7 +64,7 @@ force_vector = {'x_thrust': solenoid_thrust}
 x_act_track = [None]*N
 y_act_track = [None]*N
 z_act_track = [None]*N
-
+debug = []
 while sim_time < time_limit:
     Xthetas[i] = rocket.state_vector['thX'] *coeff_rad_to_deg
     Ythetas[i] = rocket.state_vector['thY'] *coeff_rad_to_deg
@@ -79,42 +79,41 @@ while sim_time < time_limit:
     # CONTROLLER OUTPUTS SOLENOID ON-TIME
     
     if x_on:
-        ontime_x = time.time() - x_time_on
+        ontime_x = sim_time - x_time_on
     else:
         ontime_x = 0
 
     if y_on:
-        ontime_y = time.time() - y_time_on
+        ontime_y = sim_time - y_time_on
     else:
         ontime_y = 0
 
     if z_on:   
-        ontime_z = time.time() - z_time_on
+        ontime_z = sim_time - z_time_on
     else:
         ontime_z = 0
 
     if not x_on and x_command != 0:
         x_on = True
-        x_time_on = time.time() # mark when solenoid was turned ON
+        x_time_on = sim_time # mark when solenoid was turned ON
     if x_on and ontime_x > abs(x_command) and ontime_x >= min_ontime:
         # if it has been longer than commanded time, turn back off
         x_on = False
 
     if not y_on and y_command != 0:
         y_on = True
-        y_time_on = time.time()
+        y_time_on = sim_time
     if y_on and ontime_y > abs(y_command) and ontime_y >= min_ontime:
         y_on = False
 
     if not z_on and z_command != 0:
         z_on = True
-        z_time_on = time.time()
+        z_time_on = sim_time
     if z_on and ontime_z > abs(z_command) and ontime_z >= min_ontime:
         z_on = False
     
     # DEBUG
-    print(x_on, round(time.time()-start_time,3), x_time_on-start_time, ontime_x)
-
+    debug.append((x_on, round(sim_time,3) , x_time_on, round(ontime_x,3)))
 
     def getSign(cmd):
         if cmd == 0:
@@ -132,6 +131,9 @@ while sim_time < time_limit:
     rocket.forces(force_vector, dt)
     sim_time += dt
     i+=1
+
+for s in debug[0:1000]:
+    print(s)
 
 # -- PLOTTING ------------------------
 time = np.linspace(0, time_limit, N)
