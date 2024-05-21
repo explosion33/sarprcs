@@ -1,5 +1,7 @@
 from PID import PID 
 from physics import threeDofPhysics
+from simfuncs import getSign, getActState
+from Actuator import Actuator
 import numpy as np
 import matplotlib.pyplot as plt
 import time
@@ -28,23 +30,23 @@ solenoid_thrust = 20
 # --------------
 
 # --CONTROLLER PARAMS--
-Kp = 100
-Ki = 1
-Kd = 30
-min_ontime = 0.5
+Kp = 50
+Ki = 10
+Kd = 10
+min_act_time = 0.5
 # ---------------------
 
-x_controller = PID(Kp, Ki, Kd)
-y_controller = PID(Kp, Ki, Kd)
-z_controller = PID(1000, 1, 1) # z_controller gets handed angular velocty, not angle
+x_controller = PID(50, 10, 30)
+y_controller = PID(50, 10, 10)
+z_controller = PID(1000, 1, 0) # z_controller gets handed angular velocty, not angle
 
-x_controller.setMinOntime(min_ontime)
-y_controller.setMinOntime(min_ontime)
-z_controller.setMinOntime(min_ontime)
+x_act = Actuator(min_act_time)
+y_act = Actuator(min_act_time)
+z_act = Actuator(min_act_time)
 
 rocket = threeDofPhysics(initial_state, mmoiX, mmoiZ, rz, rx)
 
-N = int(time_limit/dt)+1
+N = int(time_limit/dt)
 Xthetas = [None]*N
 Ythetas = [None]*N
 Xomegas = [None]*N
@@ -54,87 +56,49 @@ Xcommands = [None]*N
 Ycommands = [None]*N
 Zcommands = [None]*N 
 i=0
-x_on = False
-y_on = False
-z_on = False
-x_time_on = 0
-y_time_on = 0
-z_time_on = 0
-force_vector = {'x_thrust': solenoid_thrust}
 x_act_track = [None]*N
 y_act_track = [None]*N
 z_act_track = [None]*N
 debug = []
-while sim_time < time_limit:
-    Xthetas[i] = rocket.state_vector['thX'] *coeff_rad_to_deg
+while sim_time <= time_limit:
+    Xthetas[i] = rocket.state_vector['thX'] *coeff_rad_to_deg # arrays for plotting
     Ythetas[i] = rocket.state_vector['thY'] *coeff_rad_to_deg
     Xomegas[i] = rocket.state_vector['wX'] *coeff_rad_to_deg
     Yomegas[i] = rocket.state_vector['wY'] *coeff_rad_to_deg 
     Zomegas[i] = rocket.state_vector['wZ']  *coeff_rad_to_deg
-    x_command = x_controller.compute(rocket.state_vector['thX'], dt)
-    y_command = y_controller.compute(rocket.state_vector['thY'], dt)
-    z_command = z_controller.compute(rocket.state_vector['wZ'], dt)
-    Xcommands[i], Ycommands[i], Zcommands[i] = x_command, y_command, z_command
-    ontime_vector = {'x': x_command, 'y': y_command, 'z': z_command}
-    # CONTROLLER OUTPUTS SOLENOID ON-TIME
     
-    if x_on:
-        ontime_x = sim_time - x_time_on
-    else:
-        ontime_x = 0
-
-    if y_on:
-        ontime_y = sim_time - y_time_on
-    else:
-        ontime_y = 0
-
-    if z_on:   
-        ontime_z = sim_time - z_time_on
-    else:
-        ontime_z = 0
-
-    if not x_on and x_command != 0:
-        x_on = True
-        x_time_on = sim_time # mark when solenoid was turned ON
-    if x_on and ontime_x > abs(x_command) and ontime_x >= min_ontime:
-        # if it has been longer than commanded time, turn back off
-        x_on = False
-
-    if not y_on and y_command != 0:
-        y_on = True
-        y_time_on = sim_time
-    if y_on and ontime_y > abs(y_command) and ontime_y >= min_ontime:
-        y_on = False
-
-    if not z_on and z_command != 0:
-        z_on = True
-        z_time_on = sim_time
-    if z_on and ontime_z > abs(z_command) and ontime_z >= min_ontime:
-        z_on = False
+    x_cmd = x_controller.compute(rocket.state_vector['thX'], dt)
+    y_cmd = y_controller.compute(rocket.state_vector['thY'], dt)
+    z_cmd = z_controller.compute(rocket.state_vector['wZ'], dt)
+    
+    Xcommands[i] = x_cmd[0] # for plotting
+    Ycommands[i] = y_cmd[0]
+    Zcommands[i] = z_cmd[0]
+    
+    x_act.state, x_act.time_on, x_act.ontime = x_act.getState(sim_time, x_cmd)
+    y_act.state, y_act.time_on, y_act.ontime = y_act.getState(sim_time, y_cmd)
+    z_act.state, z_act.time_on, z_act.ontime = z_act.getState(sim_time, z_cmd)
     
     # DEBUG
-    debug.append((x_on, round(sim_time,3) , x_time_on, round(ontime_x,3)))
+    debug.append((round(sim_time,3), x_act.state, (x_cmd[0], round(x_cmd[1],3)), round(x_act.time_on,3), round(x_act.ontime,3)))
 
-    def getSign(cmd):
-        if cmd == 0:
-            return 0
-        return cmd/abs(cmd)
-
-    force_vector = {'x_thrust': getSign(x_command)*solenoid_thrust*x_on, # thrust will be zero if x_on = False
-                    'y_thrust': getSign(y_command)*2*solenoid_thrust*y_on,
-                    'z_thrust': getSign(z_command)*2*solenoid_thrust*z_on}
+    force_vector =  {   'x_thrust': x_act.state * solenoid_thrust,
+                        'y_thrust': y_act.state * 2 * solenoid_thrust, # 2 y-solenoids on each side
+                        'z_thrust': z_act.state * 2 * solenoid_thrust # 2 z-solenoids (force couple)
+                    }
     
-    x_act_track[i] = getSign(x_command)*x_on
-    y_act_track[i] = getSign(y_command)*y_on
-    z_act_track[i] = getSign(z_command)*z_on
+    x_act_track[i] = x_act.state
+    y_act_track[i] = y_act.state
+    z_act_track[i] = z_act.state
 
     rocket.forces(force_vector, dt)
+    
     sim_time += dt
     i+=1
 
 for s in debug[0:1000]:
-    print(s)
-
+    print(s[0], "\tstate: ", s[1], "\tcmd: ", s[2] , "\ttime on: ", s[3], "\tontime: ", s[4])
+    
 # -- PLOTTING ------------------------
 time = np.linspace(0, time_limit, N)
 fig, ax = plt.subplots(3, 3, figsize=[12,8])
@@ -165,7 +129,7 @@ for i in range(len(ax)):
     for j in range(len(ax[0])):
         ax[i][j].grid()
 
-# fig.savefig("RCS_PID/figs/3DoF_States")
+fig.savefig("controller/RCS_PID/python/figs/3DoF_States")
 plt.tight_layout()
 plt.show()
 # -----------------------------------
