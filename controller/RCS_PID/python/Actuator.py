@@ -40,10 +40,10 @@ class Actuator():
             self.state = cmd[0]
             self.time_on = time # mark when solenoid was turned ON (positive or negative)
 
-        if self.ontime > cmd[1] and self.ontime >= self.min_act_time:
-            # if it has been longer than the commanded time, turn back off
-            self.time_on = time # time_on is actually time_switch
-            self.ontime = 0
-            self.state = 0
+        # if self.ontime > cmd[1] and self.ontime >= self.min_act_time:
+        #     # if it has been longer than the commanded time, turn back off
+        #     self.time_on = time # time_on is actually time_switch
+        #     self.ontime = 0
+        #     self.state = 0
         
         return self.state, self.time_on, self.ontime
