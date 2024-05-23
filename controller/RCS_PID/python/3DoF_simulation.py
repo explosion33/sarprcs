@@ -9,15 +9,15 @@ coeff_rad_to_deg = 360/(2*np.pi)
 coeff_deg_to_rad = (2*np.pi)/360
 
 # --INITIALIZE STATE--
-initial_state = {'thX': 2 *coeff_deg_to_rad,
-                 'wX': 2 *coeff_deg_to_rad,
-                 'thY': -5 *coeff_deg_to_rad,
-                 'wY': -2 *coeff_deg_to_rad,
-                 'wZ': -50 *coeff_deg_to_rad,}
+initial_state = {'thX': -2 *coeff_deg_to_rad,
+                 'wX': 0 *coeff_deg_to_rad,
+                 'thY': 0 *coeff_deg_to_rad,
+                 'wY': 0 *coeff_deg_to_rad,
+                 'wZ': 0 *coeff_deg_to_rad,}
 # --------------------
 
 # --SIM PARAMS-- (units in N, m, kg, s, etc.) 
-dt = 0.01 
+dt = 0.1 
 mmoiX = 2000
 mmoiZ = 50
 rz = 5 # vertical distance from COM to thruster
@@ -94,8 +94,8 @@ while sim_time <= time_limit:
     sim_time += dt
     i+=1
 
-# for s in debug[0:1000]:
-#     print(s[0], "\tangle: ", s[1], "\tact.: ", s[2], "\tcmd: ", s[3] , "\ttime on: ", s[4], "\tontime: ", s[5])
+for s in debug[0:1000]:
+    print(s[0], "\tangle: ", s[1], "\tact.: ", s[2], "\tcmd: ", s[3] , "\ttime on: ", s[4], "\tontime: ", s[5])
 
 print("Total Impulse: ", round(total_impulse,3), " N-s")
 
@@ -129,6 +129,6 @@ for i in range(len(ax)):
     for j in range(len(ax[0])):
         ax[i][j].grid()
 plt.tight_layout(h_pad=1, w_pad=2)
-fig.savefig("controller/RCS_PID/python/figs/3DoF_States")
+# fig.savefig("controller/RCS_PID/python/figs/3DoF_States")
 plt.show()
 # -----------------------------------

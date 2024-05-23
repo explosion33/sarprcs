@@ -3,7 +3,7 @@
 PID::PID(float KP, float KI, float KD) {
     Kp = KP;
     Ki = KI;
-    Kd = Kd;
+    Kd = KD;
     error_last = 0;
     integral_error = 0;
 }

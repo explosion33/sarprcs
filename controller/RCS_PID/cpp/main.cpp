@@ -2,13 +2,14 @@
 #include "PID.h"
 #include "Actuator.h"
 #include <chrono>
+#include <iostream>
+#include <thread>
 
 using namespace std;
 
 const float solenoid_thrust = 20; // newtons
 const float min_act_time = 0.2; // seconds
-const double dt = 0.01;
-
+const int dt = 100; // miliseconds
 
 PID x_controller(40,1,20);
 PID y_controller(40,1,20);
@@ -22,14 +23,9 @@ struct vec3 {
     double x, y, z;
 };
 
-auto getTime(){
-    auto t = chrono::high_resolution_clock::now();
-    return t;
-}
-
 vec3 getAttitude() { // FILLER FUNCTION
     
-    vec3 state_vec = {0, 0, 0}; // theta_x, theta_y, omega_z FROM SENSORS
+    vec3 state_vec = {-0.2, 0.5, 1.0}; // theta_x, theta_y, omega_z FROM SENSORS
 
     return state_vec; //address of state_vector returned
 }
@@ -42,23 +38,34 @@ vec3 getCommands(vec3 state_vec, float dt) {
         return commands; //address of commands
     }
 
-int setStates(vec3 cmds) { // Use a method to send signal to solenoids
+int setStates(double t, vec3 cmds) { // Use a method to send signal to solenoids
         x_act.state = x_act.setState(t, cmds.x);
         y_act.state = y_act.setState(t, cmds.y);
         z_act.state = z_act.setState(t, cmds.z);
         return 0;
 }
 
-auto t_last = std::chrono::high_resolution_clock::now();
+double t = 0;
 
 int main() {
-
     while (true){
         vec3 state_vector = getAttitude();
         vec3 cmd = getCommands(state_vector, dt);
-        setStates(cmd);
-        t_last = std::chrono::high_resolution_clock::now();
+        setStates(t, cmd);
+        cout << t << "\tstates: " << state_vector.x <<", "<< state_vector.y<<", "<< state_vector.z;
+        cout << "\tcommands: " << cmd.x<<", "<< cmd.y<<", "<< cmd.z;
+        cout << "\tactuator: " << x_act.state << "\n";
+        this_thread::sleep_for(chrono::milliseconds(dt));
+        t += double(dt)/1000;
     }
-
     return 0;
+
+    // double x_ang = -0.0349;
+    // float x_cmd = x_controller.compute(x_ang, dt);
+    // x_act.setState(t, x_cmd);
+    // cout << t << "\tx-angle: " << x_ang;
+    // cout << "\tcommand: " << x_cmd;
+    // cout << "\tactuator: " << x_act.state << "\n";
+    // return 0;
+
 }

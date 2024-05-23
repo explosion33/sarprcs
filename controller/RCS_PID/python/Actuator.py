@@ -33,8 +33,12 @@ class Actuator():
             commanded time is how long the commanded state should be held in seconds
         '''
         self.ontime = time - self.time_switch # track ontime
-        cmd_state = int( cmd / abs(cmd) )# either 1 or -1
         
+        if cmd != 0:
+            cmd_state = int( cmd / abs(cmd) )# either 1 or -1
+        else:
+            cmd_state = 0
+
         if self.state != cmd_state and self.ontime >= self.min_act_time:
             self.ontime = 0 # reset ontime if a different command is sent
             self.time_switch = time # mark when solenoid state was switched
