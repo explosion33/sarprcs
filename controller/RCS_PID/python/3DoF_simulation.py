@@ -9,13 +9,12 @@ import time
 coeff_rad_to_deg = 360/(2*np.pi)
 coeff_deg_to_rad = (2*np.pi)/360
 
-
 # --INITIALIZE STATE--
-initial_state = {'thX': -5 *coeff_deg_to_rad,
+initial_state = {'thX': -2 *coeff_deg_to_rad,
                  'wX': -2 *coeff_deg_to_rad,
-                 'thY': 7 *coeff_deg_to_rad,
-                 'wY': -1 *coeff_deg_to_rad,
-                 'wZ': 50 *coeff_deg_to_rad,}
+                 'thY': -2 *coeff_deg_to_rad,
+                 'wY': -2 *coeff_deg_to_rad,
+                 'wZ': -50 *coeff_deg_to_rad,}
 # --------------------
 
 # --SIM PARAMS-- (units in N, m, kg, s, etc.) 
@@ -33,12 +32,12 @@ solenoid_thrust = 20
 Kp = 50
 Ki = 10
 Kd = 10
-min_act_time = 0.5
+min_act_time = 0.2
 # ---------------------
 
-x_controller = PID(50, 10, 30)
-y_controller = PID(50, 10, 10)
-z_controller = PID(1000, 1, 0) # z_controller gets handed angular velocty, not angle
+x_controller = PID(50, 0, 20)
+y_controller = PID(50, 0, 20)
+z_controller = PID(50, 0, 0.1) # z_controller gets handed angular velocty, not angle
 
 x_act = Actuator(min_act_time)
 y_act = Actuator(min_act_time)
@@ -46,7 +45,7 @@ z_act = Actuator(min_act_time)
 
 rocket = threeDofPhysics(initial_state, mmoiX, mmoiZ, rz, rx)
 
-N = int(time_limit/dt)
+N = int(time_limit/dt)+1
 Xthetas = [None]*N
 Ythetas = [None]*N
 Xomegas = [None]*N
@@ -80,7 +79,7 @@ while sim_time <= time_limit:
     z_act.state, z_act.time_on, z_act.ontime = z_act.getState(sim_time, z_cmd)
     
     # DEBUG
-    debug.append((round(sim_time,3), x_act.state, (x_cmd[0], round(x_cmd[1],3)), round(x_act.time_on,3), round(x_act.ontime,3)))
+    debug.append((round(sim_time,3), round(Xthetas[i],3),  x_act.state, (x_cmd[0], round(x_cmd[1],3)), round(x_act.time_on,3), round(x_act.ontime,3)))
 
     force_vector =  {   'x_thrust': x_act.state * solenoid_thrust,
                         'y_thrust': y_act.state * 2 * solenoid_thrust, # 2 y-solenoids on each side
@@ -97,7 +96,7 @@ while sim_time <= time_limit:
     i+=1
 
 for s in debug[0:1000]:
-    print(s[0], "\tstate: ", s[1], "\tcmd: ", s[2] , "\ttime on: ", s[3], "\tontime: ", s[4])
+    print(s[0], "\tangle: ", s[1], "\tact.: ", s[2], "\tcmd: ", s[3] , "\ttime on: ", s[4], "\tontime: ", s[5])
     
 # -- PLOTTING ------------------------
 time = np.linspace(0, time_limit, N)
@@ -121,15 +120,15 @@ ax[1][2].set_ylabel(r"$\omega_z$", fontsize=15)
 ax[2][0].plot(time, x_act_track, color='#4C4281', label='x')
 ax[2][1].plot(time, y_act_track, color='#055A39',label='y')
 ax[2][2].plot(time, z_act_track, color='#F9216A',label='z')
-ax[2][0].set_ylabel("x_cmd", fontsize=15)
-ax[2][1].set_ylabel("y_cmd", fontsize=15)
-ax[2][2].set_ylabel("z_cmd", fontsize=15)
+ax[2][0].set_ylabel("x actuator state", fontsize=15)
+ax[2][1].set_ylabel("y actuator state", fontsize=15)
+ax[2][2].set_ylabel("z actuator state", fontsize=15)
 
 for i in range(len(ax)):
     for j in range(len(ax[0])):
         ax[i][j].grid()
 
 fig.savefig("controller/RCS_PID/python/figs/3DoF_States")
-plt.tight_layout()
+plt.tight_layout(pad=2.5)
 plt.show()
 # -----------------------------------

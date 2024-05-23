@@ -7,7 +7,7 @@ class Actuator():
              0: both solenoids off
              1: positive solenoid on, negative solenoid off
         
-        time_on: when the actuator was first commanded to be in the current state
+       time_switch: when the actuator was first commanded to be in the current state
         
         ontime: how long the actuator has been in the current state
         
@@ -15,12 +15,12 @@ class Actuator():
         '''
         self.min_act_time = min_act_time
         self.state = 0
-        self.time_on = 0
+        self.time_switch = 0
         self.ontime = 0
         
     def getState(self, time, cmd):
         '''
-        Manages the state of the solenoids controlling motion on an axis
+        Handles the state of the solenoids controlling motion on an axis
         
         time: current time
         
@@ -33,17 +33,17 @@ class Actuator():
             
         '''
         
-        self.ontime = time - self.time_on # track ontime
+        self.ontime = time - self.time_switch # track ontime
         
         if self.state != cmd[0] and self.ontime >= self.min_act_time:
             self.ontime = 0 # reset ontime if a different command is sent
-            self.state = cmd[0]
-            self.time_on = time # mark when solenoid was turned ON (positive or negative)
-
-        # if self.ontime > cmd[1] and self.ontime >= self.min_act_time:
-        #     # if it has been longer than the commanded time, turn back off
-        #     self.time_on = time # time_on is actually time_switch
-        #     self.ontime = 0
-        #     self.state = 0
+            self.time_switch = time # mark when solenoid state was switched
         
-        return self.state, self.time_on, self.ontime
+            if cmd[1] > self.min_act_time:
+                self.state = cmd[0]
+                self.time_switch = time # mark when solenoid state was switched
+            else: # command is too small
+                self.state = 0
+                self.time_switch = time
+
+        return self.state, self.time_switch, self.ontime
