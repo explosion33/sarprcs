@@ -4,9 +4,8 @@
 
 class PID {
     public:
-        PID(float KP, float KI, float KD);
+        PID(float KP, float KI, float KD); //constructor
         float compute(float theta,float dt);
-        void setLims(float min, float max);
 
     private:
         float Kp;

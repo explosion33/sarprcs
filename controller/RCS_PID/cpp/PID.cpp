@@ -1,15 +1,11 @@
 #include "PID.h"
 
 PID::PID(float KP, float KI, float KD) {
-    max_thrust = 999999999;
-    min_thrust = 999999999; // better way to do this?
-    error_last = 0;
-    integral_error = 0;
-    // max_thrust = None;
-    // min_thrust = None;
     Kp = KP;
     Ki = KI;
     Kd = Kd;
+    error_last = 0;
+    integral_error = 0;
 }
 
 float PID::compute(float theta,float dt) {
@@ -20,12 +16,7 @@ float PID::compute(float theta,float dt) {
     float D = -1*Kd*( error - error_last )/dt;
     float output = P+I+D;
     error_last = error;
+
     return output;
 }
 
-void PID::setLims(float min, float max) {
-    // Sets minimum & maximum thrust in newtons
-    max_thrust = max;
-    min_thrust = min;
-
-}
